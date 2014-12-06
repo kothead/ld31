@@ -1,20 +1,32 @@
 package com.kothead.ld31;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.kothead.ld31.data.ImageCache;
+import com.kothead.ld31.screen.GameScreen;
 
-public class LD31 extends ApplicationAdapter {
+public class LD31 extends Game {
 
 	@Override
 	public void create () {
+		ImageCache.load();
+		setGameScreen();
+	}
+
+	@Override
+	public void setScreen(Screen screen) {
+		Screen old = getScreen();
+		super.setScreen(screen);
+		if (old != null) old.dispose();
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		super.render();
+	}
+
+	public void setGameScreen() {
+		setScreen(new GameScreen(this));
 	}
 }

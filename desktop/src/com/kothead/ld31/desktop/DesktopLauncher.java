@@ -14,8 +14,11 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		packAssets();
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = Configuration.WORLD_WIDTH;
-		config.height = Configuration.WORLD_HEIGHT;
+		config.width = Configuration.WORLD_WIDTH * Configuration.SCALE_FACTOR;
+		config.height = Configuration.WORLD_HEIGHT * Configuration.SCALE_FACTOR;
+		config.resizable = false;
+//		config.fullscreen = true;
+//		config.vSyncEnabled = true;
 		new LwjglApplication(new LD31(), config);
 	}
 
