@@ -1,5 +1,7 @@
 package com.kothead.ld31.data;
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -69,7 +71,7 @@ public class Labyrinth {
         steps = new int[height][width];
         walls = new int[height][width];
         clearArray(steps);
-        clearArray(walls);
+        clearArray(walls, 0);
 
         path = new ArrayList<Direction>();
 
@@ -79,10 +81,22 @@ public class Labyrinth {
         moveTo(0, 0);
     }
 
-    public int[][] getWalls() {
-        return walls;
+    public boolean hasVerticalWall(int x, int y) {
+        return (walls[y][x] & WALL_RIGHT) > 0;
     }
-    
+
+    public boolean hasHorizontalWall(int x, int y) {
+        return (walls[y][x] & WALL_BOTTOM) > 0;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public void moveTo(int x, int y) {
         oldX = curX;
         oldY = curY;
@@ -92,6 +106,7 @@ public class Labyrinth {
         processDirection();
         calcSteps();
         generateWalls();
+        logArray(steps);
     }
 
     private void processDirection() {
@@ -101,13 +116,16 @@ public class Labyrinth {
         Direction dir = Direction.getByOffset(dx, dy);
         if (dir == null) {
             path.clear();
+            Gdx.app.log("path", "clear()");
         } else {
             int revisitedId = findWhenVisited(dir, path, REVISITED_CHECK_COUNT);
             if (revisitedId > -1) {
                 int last = path.size() - 1;
                 for (int i = last; i >= revisitedId; i--) path.remove(i);
+                Gdx.app.log("path", "revisited()");
             } else {
                 path.add(dir);
+                Gdx.app.log("path", "add()");
             }
         }
     }
@@ -137,21 +155,26 @@ public class Labyrinth {
         int x = curX;
         int y = curY;
         int last = path.size() - 1;
-        for (int i = last; i > last - DEEPNESS; i--) {
-            Direction prev = path.get(i);
+        for (int i = last; i >= 0 && i > last - DEEPNESS; i--) {
+            Direction prev = path.get(i).getOpposite();
             x += Direction.getDx(prev);
             y += Direction.getDy(prev);
             steps[y][x] = i;
         }
-        calcStep(curX, curY, last, DEEPNESS);
+        calcStep(curX, curY, last + 1, DEEPNESS);
     }
 
     private void calcStep(int x, int y, int value, int iteration) {
         if (x < 0 || x >= width) return;
         if (y < 0 || y >= height) return;
 
-        if (steps[y][x] == CLEAR_VALUE || steps[y][x] > value) steps[y][x] = value;
+        if (steps[y][x] == CLEAR_VALUE || steps[y][x] > value) {
+            steps[y][x] = value;
+        } else {
+            value = steps[y][x];
+        }
         value++;
+
         iteration--;
         if (iteration == 0) return;
 
@@ -162,7 +185,7 @@ public class Labyrinth {
     }
 
     private void generateWalls() {
-        clearArray(walls, CLEAR_VALUE);
+        clearArray(walls, 0);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 generateWall(j, i);
@@ -171,9 +194,14 @@ public class Labyrinth {
     }
 
     private void generateWall(int x, int y) {
-        random.setSeed(steps[y][x] + y + x);
-        if (random.nextBoolean()) walls[y][x] &= WALL_BOTTOM;
-        if (random.nextBoolean()) walls[y][x] &= WALL_RIGHT;
+        if (steps[y][x] == CLEAR_VALUE) return;
+        random.setSeed(steps[y][x] * (y - x));
+        random.nextBoolean();
+        if (random.nextBoolean()) {
+            walls[y][x] |= WALL_RIGHT;
+        } else {
+            walls[y][x] |= WALL_BOTTOM;
+        }
     }
 
     private void clearArray(int[][] array) {
@@ -187,5 +215,16 @@ public class Labyrinth {
                 inner[j] = value;
             }
         }
+    }
+
+    private void logArray(int[][] array) {
+        for (int i = 0; i < height; i++) {
+            StringBuilder builder = new StringBuilder();
+            for (int j = 0; j < width; j++) {
+                builder.append(String.format("%2d ", array[i][j]));
+            }
+            Gdx.app.log("wall", builder.toString());
+        }
+        Gdx.app.log("wall", "--------------------------------------------");
     }
 }
