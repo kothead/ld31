@@ -20,10 +20,10 @@ public class Wall extends Sprite {
     public void setPosition(boolean horizontal, int x, int y) {
         if (horizontal) {
             setX(x * WALL_WIDTH - WALL_HEIGHT / 2);
-            setY((y + 1) * WALL_WIDTH - WALL_HEIGHT / 2);
+            setY(y * WALL_WIDTH - WALL_HEIGHT / 2);
             setSize(WALL_WIDTH + WALL_HEIGHT, WALL_HEIGHT);
         } else {
-            setX(x * WALL_WIDTH - WALL_HEIGHT / 2);
+            setX((x + 1) * WALL_WIDTH - WALL_HEIGHT / 2);
             setY(y * WALL_WIDTH - WALL_HEIGHT / 2);
             setSize(WALL_HEIGHT, WALL_WIDTH + WALL_HEIGHT);
         }

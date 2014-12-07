@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.kothead.ld31.LD31;
 import com.kothead.ld31.data.ImageCache;
 import com.kothead.ld31.data.Labyrinth;
+import com.kothead.ld31.data.LabyrinthBacktrack;
 import com.kothead.ld31.view.Lightmap;
 import com.kothead.ld31.view.Player;
 import com.kothead.ld31.view.TiledSprite;
@@ -31,7 +32,7 @@ public class GameScreen extends BaseScreen {
     private TiledSprite background;
     private Player player;
     private Wall wall;
-    private Labyrinth labyrinth;
+    private LabyrinthBacktrack labyrinth;
     private Lightmap lightmap;
 
     public GameScreen(LD31 game) {
@@ -46,8 +47,14 @@ public class GameScreen extends BaseScreen {
         player.setPosition(position, position);
         wall = new Wall();
 
-        labyrinth = new Labyrinth(GRID_WIDTH, GRID_HEIGHT);
-        labyrinth.moveTo(0, 0);
+        labyrinth = new LabyrinthBacktrack.Builder()
+                .setCanMoveBack(false)
+                .setWidth(GRID_WIDTH)
+                .setHeight(GRID_HEIGHT)
+                .setSeed(100)
+                .setStartX(0)
+                .setStartY(0)
+                .create();
         lightmap = new Lightmap(labyrinth);
 
         Gdx.input.setInputProcessor(new Processor());
@@ -77,14 +84,14 @@ public class GameScreen extends BaseScreen {
         player.setNotBlocked();
         for (int i = 0; i < GRID_HEIGHT; i++) {
             for (int j = 0; j < GRID_WIDTH; j++) {
-                if (labyrinth.hasVerticalWall(j, i)) {
-                    wall.setPosition(false, j, i);
+                if (labyrinth.hasWallBottom(j, i)) {
+                    wall.setPosition(true, j, i);
                     player.processWall(delta, wall);
                     wall.draw(delta, shapes);
                 }
 
-                if (labyrinth.hasHorizontalWall(j, i)) {
-                    wall.setPosition(true, j, i);
+                if (labyrinth.hasWallRight(j, i)) {
+                    wall.setPosition(false, j, i);
                     player.processWall(delta, wall);
                     wall.draw(delta, shapes);
                 }

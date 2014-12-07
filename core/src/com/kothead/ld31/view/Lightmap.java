@@ -1,8 +1,10 @@
 package com.kothead.ld31.view;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.kothead.ld31.data.Labyrinth;
+import com.kothead.ld31.data.LabyrinthBacktrack;
 import com.kothead.ld31.screen.GameScreen;
 
 /**
@@ -13,12 +15,12 @@ public class Lightmap {
     private static final float MAX_SHADOW = 1f;
     private static final float DELTA_SHADOW = 0.2f;
 
-    private Labyrinth labyrinth;
+    private LabyrinthBacktrack labyrinth;
     private int lightX, lightY;
     private int width, height;
     private float[][] map;
 
-    public Lightmap(Labyrinth labyrinth) {
+    public Lightmap(LabyrinthBacktrack labyrinth) {
         width = labyrinth.getWidth();
         height = labyrinth.getHeight();
         this.labyrinth = labyrinth;
@@ -51,7 +53,6 @@ public class Lightmap {
     }
 
     private void lightCell(int x, int y, float value) {
-        if (value >= MAX_SHADOW) return;
         if (x < 0 || x >= width) return;
         if (y < 0 || y >= height) return;
 
@@ -60,21 +61,27 @@ public class Lightmap {
         }
 
         value += DELTA_SHADOW;
+        if (value >= MAX_SHADOW) return;
 
-        if (!labyrinth.hasHorizontalWall(x, y)) {
-            lightCell(x, y + 1, value);
-        }
-
-        if (!labyrinth.hasVerticalWall(x, y)) {
-            lightCell(x - 1, y, value);
-        }
-
-        if (y > 0 && !labyrinth.hasHorizontalWall(x, y - 1)) {
+        if (isCoordsValid(x, y) && !labyrinth.hasWallBottom(x, y)) {
             lightCell(x, y - 1, value);
         }
 
-        if (x < GameScreen.GRID_WIDTH - 1 && !labyrinth.hasVerticalWall(x + 1, y)) {
+        if (isCoordsValid(x, y) && !labyrinth.hasWallRight(x, y)) {
             lightCell(x + 1, y, value);
         }
+
+        if (isCoordsValid(x, y + 1) && !labyrinth.hasWallBottom(x, y + 1)) {
+            lightCell(x, y + 1, value);
+        }
+
+        if (isCoordsValid(x - 1, y) && !labyrinth.hasWallRight(x - 1, y)) {
+            lightCell(x - 1, y, value);
+        }
+    }
+
+    private boolean isCoordsValid(int x, int y) {
+        return x >= 0 && x < GameScreen.GRID_WIDTH
+                && y >= 0 && y < GameScreen.GRID_HEIGHT;
     }
 }

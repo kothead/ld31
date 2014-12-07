@@ -17,44 +17,9 @@ public class Labyrinth {
     private static final int PATH_COUNT = Integer.MAX_VALUE;
     private static final int CLEAR_VALUE = -1;
     private static final int REVISITED_CHECK_COUNT = 4;
-    private static final int DEEPNESS = 3;
-
-    private enum Direction {
-        TOP, RIGHT, BOTTOM, LEFT;
-
-        private Direction opposite;
-
-        static {
-            TOP.opposite = BOTTOM;
-            RIGHT.opposite = LEFT;
-            BOTTOM.opposite = TOP;
-            LEFT.opposite = RIGHT;
-        }
-
-        public static Direction getByOffset(int dx, int dy) {
-            if (dx > 0) return RIGHT;
-            if (dx < 0) return LEFT;
-            if (dy > 0) return BOTTOM;
-            if (dy < 0) return TOP;
-            return null;
-        }
-
-        public static int getDx(Direction dir) {
-            if (dir == RIGHT) return 1;
-            if (dir == LEFT) return -1;
-            return 0;
-        }
-
-        public static int getDy(Direction dir) {
-            if (dir == BOTTOM) return 1;
-            if (dir == TOP) return -1;
-            return 0;
-        }
-
-        public Direction getOpposite() {
-            return opposite;
-        }
-    };
+    private static final int FRESH_PATH_DEEPNESS = 3;
+    private static final int PREV_PATH_DEEPNESS = 2;
+    private static final float WALL_PROBABILITY = 0.90f;
 
     private int seed;
     private Random random;
@@ -116,16 +81,18 @@ public class Labyrinth {
         Direction dir = Direction.getByOffset(dx, dy);
         if (dir == null) {
             path.clear();
-            Gdx.app.log("path", "clear()");
+            Gdx.app.log("path", "clear;");
         } else {
             int revisitedId = findWhenVisited(dir, path, REVISITED_CHECK_COUNT);
             if (revisitedId > -1) {
                 int last = path.size() - 1;
+
+                int remember = path.size();
                 for (int i = last; i >= revisitedId; i--) path.remove(i);
-                Gdx.app.log("path", "revisited()");
+                Gdx.app.log("path", String.format("revisited; path size was: %d; path size now: %d", remember, path.size()));
             } else {
                 path.add(dir);
-                Gdx.app.log("path", "add()");
+                Gdx.app.log("path", "add;");
             }
         }
     }
@@ -155,13 +122,15 @@ public class Labyrinth {
         int x = curX;
         int y = curY;
         int last = path.size() - 1;
-        for (int i = last; i >= 0 && i > last - DEEPNESS; i--) {
+        for (int i = last; i >= 0 && i > last - PREV_PATH_DEEPNESS; i--) {
             Direction prev = path.get(i).getOpposite();
             x += Direction.getDx(prev);
             y += Direction.getDy(prev);
-            steps[y][x] = i;
+            calcStep(x, y, i, FRESH_PATH_DEEPNESS);
         }
-        calcStep(curX, curY, last + 1, DEEPNESS);
+        Gdx.app.log("wall", "break line");
+        logArray(steps);
+        calcStep(curX, curY, last + 1, FRESH_PATH_DEEPNESS);
     }
 
     private void calcStep(int x, int y, int value, int iteration) {
@@ -197,10 +166,12 @@ public class Labyrinth {
         if (steps[y][x] == CLEAR_VALUE) return;
         random.setSeed(steps[y][x] * (y - x));
         random.nextBoolean();
-        if (random.nextBoolean()) {
-            walls[y][x] |= WALL_RIGHT;
-        } else {
-            walls[y][x] |= WALL_BOTTOM;
+        if (random.nextFloat() < WALL_PROBABILITY) {
+            if (random.nextBoolean()) {
+                walls[y][x] |= WALL_RIGHT;
+            } else {
+                walls[y][x] |= WALL_BOTTOM;
+            }
         }
     }
 
@@ -218,7 +189,7 @@ public class Labyrinth {
     }
 
     private void logArray(int[][] array) {
-        for (int i = 0; i < height; i++) {
+        for (int i = height - 1; i >= 0; i--) {
             StringBuilder builder = new StringBuilder();
             for (int j = 0; j < width; j++) {
                 builder.append(String.format("%2d ", array[i][j]));
