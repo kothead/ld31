@@ -1,41 +1,86 @@
 package com.kothead.ld31.view;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
+import com.kothead.ld31.data.Labyrinth;
+import com.kothead.ld31.screen.GameScreen;
 
 /**
  * Created by st on 12/7/14.
  */
-public class Player {
+public class Player extends Sprite {
 
-    private static final int SIZE = 10;
+    public static final int SIZE = 10;
+
     private static final float SPEED = 100f;
 
-    private float x, y;
     private float vx, vy;
+    private Rectangle rectPlayer, rectObstacle, overlap;
+    private boolean horizontalBlocked, verticalBlocked;
 
     public Player() {
-
+        setSize(SIZE, SIZE);
+        rectPlayer = new Rectangle();
+        rectPlayer.setSize(SIZE, SIZE);
+        rectObstacle = new Rectangle();
+        overlap = new Rectangle();
     }
 
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public void setNotBlocked() {
+        horizontalBlocked = false;
+        verticalBlocked = false;
     }
 
-    public float getX() {
-        return x;
+    public void processWall(float delta, Wall wall) {
+        rectObstacle.set(wall.getX(), wall.getY(), wall.getWidth(), wall.getHeight());
+        if (!horizontalBlocked) {
+            rectPlayer.setPosition(getX() + vx * delta, getY());
+            if (Intersector.intersectRectangles(rectPlayer, rectObstacle, overlap)) {
+                horizontalBlocked = true;
+            }
+        }
+        if (!verticalBlocked) {
+            rectPlayer.setPosition(getX(), getY() + vy * delta);
+            if (Intersector.intersectRectangles(rectPlayer, rectObstacle, overlap)) {
+                verticalBlocked = true;
+            }
+        }
     }
 
-    public float getY() {
-        return y;
+    public void updateLabyrinth(float delta, Labyrinth labyrinth) {
+        int oldX = getGridX();
+        int oldY = getGridY();
+        int curX = getGridX(getX() + delta * vx);
+        int curY = getGridY(getY() + delta * vy);
+        if ((curX != oldX || curY != oldY)
+                && curX >= 0 && curX < GameScreen.GRID_WIDTH
+                && curY >= 0 && curY < GameScreen.GRID_HEIGHT) labyrinth.moveTo(curX, curY);
+    }
+
+    public int getGridX() {
+        return getGridX(getX());
+    }
+
+    public int getGridY() {
+        return getGridY(getY());
+    }
+
+    public static int getGridX(float x) {
+        return (int) (x / GameScreen.GRID_SIZE);
+    }
+
+    public static int getGridY(float y) {
+        return (int) (y / GameScreen.GRID_SIZE);
     }
 
     public void draw(float delta, ShapeRenderer renderer) {
-        x += vx * delta;
-        y += vy * delta;
+        if (!horizontalBlocked) setX(getX() + vx * delta);
+        if (!verticalBlocked) setY(getY() + vy * delta);
         renderer.setColor(Color.WHITE);
-        renderer.circle(x, y, SIZE);
+        renderer.rect(getX(), getY(), getWidth(), getHeight());
     }
 
     public void goUp() {
@@ -69,4 +114,5 @@ public class Player {
     public void stopRight() {
         vx -= SPEED;
     }
+
 }

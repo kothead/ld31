@@ -42,7 +42,8 @@ public class GameScreen extends BaseScreen {
                 getWorldWidth(), getWorldHeight());
 
         player = new Player();
-        player.setPosition(0, 0);
+        float position = (GRID_SIZE - Player.SIZE) / 2f;
+        player.setPosition(position, position);
         wall = new Wall();
 
         labyrinth = new Labyrinth(GRID_WIDTH, GRID_HEIGHT);
@@ -73,31 +74,27 @@ public class GameScreen extends BaseScreen {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
 
-        int oldX = (int) (player.getX() / GRID_SIZE);
-        int oldY = (int) (player.getY() / GRID_SIZE);
-        player.draw(delta, shapes);
-        int curX = (int) (player.getX() / GRID_SIZE);
-        int curY = (int) (player.getY() / GRID_SIZE);
-        if ((curX != oldX || curY != oldY)
-                && curX >= 0 && curX < GRID_WIDTH
-                && curY >= 0 && curY < GRID_HEIGHT) labyrinth.moveTo(curX, curY);
-
+        player.setNotBlocked();
         for (int i = 0; i < GRID_HEIGHT; i++) {
             for (int j = 0; j < GRID_WIDTH; j++) {
-                wall.setPosition(j, i);
                 if (labyrinth.hasVerticalWall(j, i)) {
-                    wall.setVertical();
+                    wall.setPosition(false, j, i);
+                    player.processWall(delta, wall);
                     wall.draw(delta, shapes);
                 }
 
                 if (labyrinth.hasHorizontalWall(j, i)) {
-                    wall.setHorizontal();
+                    wall.setPosition(true, j, i);
+                    player.processWall(delta, wall);
                     wall.draw(delta, shapes);
                 }
             }
         }
 
-        lightmap.setLightPosition(curX, curY);
+        player.updateLabyrinth(delta, labyrinth);
+        player.draw(delta, shapes);
+
+        lightmap.setLightPosition(player.getGridX(), player.getGridY());
         lightmap.draw(shapes);
 
         shapes.end();
