@@ -1,6 +1,6 @@
-package com.kothead.ld31.data;
+package com.kothead.ld31.model;
 
-import com.badlogic.gdx.Gdx;
+import com.kothead.ld31.data.Direction;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -9,7 +9,7 @@ import java.util.Stack;
 /**
  * Created by st on 12/7/14.
  */
-public class LabyrinthBacktrack {
+public class LabyrinthBacktrack implements Labyrinth {
 
     public static final int WALL_RIGHT = 1;
     public static final int WALL_BOTTOM = 2;
@@ -28,18 +28,22 @@ public class LabyrinthBacktrack {
         walls = new int[height][width];
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }
 
+    @Override
     public boolean hasWallRight(int x, int y) {
         return (walls[y][x] & WALL_RIGHT) == WALL_RIGHT;
     }
 
+    @Override
     public boolean hasWallBottom(int x, int y) {
         return (walls[y][x] & WALL_BOTTOM) == WALL_BOTTOM;
     }
@@ -68,7 +72,7 @@ public class LabyrinthBacktrack {
         private int startY;
         private Direction direction;
         private boolean canMoveBack;
-        private Labyrinth copyFrom;
+        private LabyrinthWTF copyFrom;
         private int copyWidth;
         private int copyHeight;
 
@@ -117,7 +121,7 @@ public class LabyrinthBacktrack {
             return this;
         }
 
-        public Builder setCopyFrom(Labyrinth copyFrom) {
+        public Builder setCopyFrom(LabyrinthWTF copyFrom) {
             this.copyFrom = copyFrom;
             return this;
         }

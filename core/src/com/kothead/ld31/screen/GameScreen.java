@@ -3,14 +3,15 @@ package com.kothead.ld31.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.kothead.ld31.LD31;
+import com.kothead.ld31.data.Configuration;
 import com.kothead.ld31.data.ImageCache;
-import com.kothead.ld31.data.Labyrinth;
-import com.kothead.ld31.data.LabyrinthBacktrack;
+import com.kothead.ld31.model.BacktrackController;
+import com.kothead.ld31.model.LabyrinthBacktrack;
+import com.kothead.ld31.model.LabyrinthController;
 import com.kothead.ld31.view.Lightmap;
 import com.kothead.ld31.view.Player;
 import com.kothead.ld31.view.TiledSprite;
@@ -21,10 +22,6 @@ import com.kothead.ld31.view.Wall;
  */
 public class GameScreen extends BaseScreen {
 
-    public static final int GRID_SIZE = 36;
-    public static final int GRID_WIDTH = 16;
-    public static final int GRID_HEIGHT = 10;
-
     private static final String TEXTURE_FLOOR = "floor";
 
     private SpriteBatch batch;
@@ -32,7 +29,7 @@ public class GameScreen extends BaseScreen {
     private TiledSprite background;
     private Player player;
     private Wall wall;
-    private LabyrinthBacktrack labyrinth;
+    private LabyrinthController controller;
     private Lightmap lightmap;
 
     public GameScreen(LD31 game) {
@@ -43,19 +40,12 @@ public class GameScreen extends BaseScreen {
                 getWorldWidth(), getWorldHeight());
 
         player = new Player();
-        float position = (GRID_SIZE - Player.SIZE) / 2f;
+        float position = (Configuration.LABYRINTH_CELL_SIZE - Player.SIZE) / 2f;
         player.setPosition(position, position);
         wall = new Wall();
 
-        labyrinth = new LabyrinthBacktrack.Builder()
-                .setCanMoveBack(false)
-                .setWidth(GRID_WIDTH)
-                .setHeight(GRID_HEIGHT)
-                .setSeed(100)
-                .setStartX(0)
-                .setStartY(0)
-                .create();
-        lightmap = new Lightmap(labyrinth);
+        controller = new BacktrackController();
+        lightmap = new Lightmap(controller);
 
         Gdx.input.setInputProcessor(new Processor());
     }
@@ -82,15 +72,15 @@ public class GameScreen extends BaseScreen {
         shapes.begin(ShapeRenderer.ShapeType.Filled);
 
         player.setNotBlocked();
-        for (int i = 0; i < GRID_HEIGHT; i++) {
-            for (int j = 0; j < GRID_WIDTH; j++) {
-                if (labyrinth.hasWallBottom(j, i)) {
+        for (int i = 0; i < Configuration.LABYRINTH_HEIGHT; i++) {
+            for (int j = 0; j < Configuration.LABYRINTH_WIDTH; j++) {
+                if (controller.hasWallBottom(j, i)) {
                     wall.setPosition(true, j, i);
                     player.processWall(delta, wall);
                     wall.draw(delta, shapes);
                 }
 
-                if (labyrinth.hasWallRight(j, i)) {
+                if (controller.hasWallRight(j, i)) {
                     wall.setPosition(false, j, i);
                     player.processWall(delta, wall);
                     wall.draw(delta, shapes);
@@ -98,7 +88,7 @@ public class GameScreen extends BaseScreen {
             }
         }
 
-        player.updateLabyrinth(delta, labyrinth);
+        player.updateLabyrinth(delta, controller);
         player.draw(delta, shapes);
 
         lightmap.setLightPosition(player.getGridX(), player.getGridY());

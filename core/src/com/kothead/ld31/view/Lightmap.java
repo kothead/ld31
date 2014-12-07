@@ -1,10 +1,8 @@
 package com.kothead.ld31.view;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.kothead.ld31.data.Labyrinth;
-import com.kothead.ld31.data.LabyrinthBacktrack;
+import com.kothead.ld31.data.Configuration;
+import com.kothead.ld31.model.LabyrinthController;
 import com.kothead.ld31.screen.GameScreen;
 
 /**
@@ -15,15 +13,15 @@ public class Lightmap {
     private static final float MAX_SHADOW = 1f;
     private static final float DELTA_SHADOW = 0.2f;
 
-    private LabyrinthBacktrack labyrinth;
+    private LabyrinthController controller;
     private int lightX, lightY;
     private int width, height;
     private float[][] map;
 
-    public Lightmap(LabyrinthBacktrack labyrinth) {
-        width = labyrinth.getWidth();
-        height = labyrinth.getHeight();
-        this.labyrinth = labyrinth;
+    public Lightmap(LabyrinthController controller) {
+        width = controller.getWidth();
+        height = controller.getHeight();
+        this.controller = controller;
         map = new float[height][width];
     }
 
@@ -37,8 +35,10 @@ public class Lightmap {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 renderer.setColor(0, 0, 0, map[i][j]);
-                renderer.rect(GameScreen.GRID_SIZE * j, GameScreen.GRID_SIZE * i,
-                        GameScreen.GRID_SIZE, GameScreen.GRID_SIZE);
+                renderer.rect(Configuration.LABYRINTH_CELL_SIZE * j,
+                        Configuration.LABYRINTH_CELL_SIZE * i,
+                        Configuration.LABYRINTH_CELL_SIZE,
+                        Configuration.LABYRINTH_CELL_SIZE);
             }
         }
     }
@@ -63,25 +63,25 @@ public class Lightmap {
         value += DELTA_SHADOW;
         if (value >= MAX_SHADOW) return;
 
-        if (isCoordsValid(x, y) && !labyrinth.hasWallBottom(x, y)) {
+        if (isCoordsValid(x, y) && !controller.hasWallBottom(x, y)) {
             lightCell(x, y - 1, value);
         }
 
-        if (isCoordsValid(x, y) && !labyrinth.hasWallRight(x, y)) {
+        if (isCoordsValid(x, y) && !controller.hasWallRight(x, y)) {
             lightCell(x + 1, y, value);
         }
 
-        if (isCoordsValid(x, y + 1) && !labyrinth.hasWallBottom(x, y + 1)) {
+        if (isCoordsValid(x, y + 1) && !controller.hasWallBottom(x, y + 1)) {
             lightCell(x, y + 1, value);
         }
 
-        if (isCoordsValid(x - 1, y) && !labyrinth.hasWallRight(x - 1, y)) {
+        if (isCoordsValid(x - 1, y) && !controller.hasWallRight(x - 1, y)) {
             lightCell(x - 1, y, value);
         }
     }
 
     private boolean isCoordsValid(int x, int y) {
-        return x >= 0 && x < GameScreen.GRID_WIDTH
-                && y >= 0 && y < GameScreen.GRID_HEIGHT;
+        return x >= 0 && x < Configuration.LABYRINTH_WIDTH
+                && y >= 0 && y < Configuration.LABYRINTH_HEIGHT;
     }
 }

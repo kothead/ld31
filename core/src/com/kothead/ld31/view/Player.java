@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.kothead.ld31.data.Labyrinth;
-import com.kothead.ld31.data.LabyrinthBacktrack;
+import com.kothead.ld31.data.Configuration;
+import com.kothead.ld31.model.LabyrinthBacktrack;
+import com.kothead.ld31.model.LabyrinthController;
 import com.kothead.ld31.screen.GameScreen;
 
 /**
@@ -51,15 +52,17 @@ public class Player extends Sprite {
         }
     }
 
-    public void updateLabyrinth(float delta, LabyrinthBacktrack labyrinth) {
+    public void updateLabyrinth(float delta, LabyrinthController controller) {
         int oldX = getGridX();
         int oldY = getGridY();
         int curX = getGridX(getX() + delta * vx);
         int curY = getGridY(getY() + delta * vy);
-        //TODO: fix
-//        if ((curX != oldX || curY != oldY)
-//                && curX >= 0 && curX < GameScreen.GRID_WIDTH
-//                && curY >= 0 && curY < GameScreen.GRID_HEIGHT) labyrinth.moveTo(curX, curY);
+
+        if ((curX != oldX || curY != oldY)
+                && curX >= 0 && curX < Configuration.LABYRINTH_WIDTH
+                && curY >= 0 && curY < Configuration.LABYRINTH_HEIGHT) {
+            controller.moveTo(curX, curY);
+        }
     }
 
     public int getGridX() {
@@ -71,11 +74,11 @@ public class Player extends Sprite {
     }
 
     public static int getGridX(float x) {
-        return (int) (x / GameScreen.GRID_SIZE);
+        return (int) (x / Configuration.LABYRINTH_CELL_SIZE);
     }
 
     public static int getGridY(float y) {
-        return (int) (y / GameScreen.GRID_SIZE);
+        return (int) (y / Configuration.LABYRINTH_CELL_SIZE);
     }
 
     public void draw(float delta, ShapeRenderer renderer) {

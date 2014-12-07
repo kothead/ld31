@@ -1,6 +1,8 @@
-package com.kothead.ld31.data;
+package com.kothead.ld31.model;
 
 import com.badlogic.gdx.Gdx;
+import com.kothead.ld31.data.Direction;
+import com.kothead.ld31.model.Labyrinth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.Random;
 /**
  * Created by st on 12/7/14.
  */
-public class Labyrinth {
+public class LabyrinthWTF implements Labyrinth {
 
     public static final int WALL_RIGHT = 1;
     public static final int WALL_BOTTOM = 2;
@@ -29,7 +31,7 @@ public class Labyrinth {
     private int[][] walls;
     private List<Direction> path;
 
-    public Labyrinth(int width, int height) {
+    public LabyrinthWTF(int width, int height) {
         this.width = width;
         this.height = height;
 
@@ -46,18 +48,22 @@ public class Labyrinth {
         moveTo(0, 0);
     }
 
-    public boolean hasVerticalWall(int x, int y) {
+    @Override
+    public boolean hasWallRight(int x, int y) {
         return (walls[y][x] & WALL_RIGHT) > 0;
     }
 
-    public boolean hasHorizontalWall(int x, int y) {
+    @Override
+    public boolean hasWallBottom(int x, int y) {
         return (walls[y][x] & WALL_BOTTOM) > 0;
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }

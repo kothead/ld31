@@ -8,4 +8,8 @@ public class Configuration {
     public static final int WORLD_WIDTH = 640;
     public static final int WORLD_HEIGHT = 320;
     public static final int SCALE_FACTOR = 2;
+
+    public static final int LABYRINTH_WIDTH = 16;
+    public static final int LABYRINTH_HEIGHT = 10;
+    public static final int LABYRINTH_CELL_SIZE = 36;
 }
