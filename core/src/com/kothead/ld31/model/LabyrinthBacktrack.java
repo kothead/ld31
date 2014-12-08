@@ -144,6 +144,7 @@ public class LabyrinthBacktrack implements Labyrinth {
         public LabyrinthBacktrack create() {
             labyrinth = new LabyrinthBacktrack(width, height);
             generateWalls();
+            boolean deadendStart = false;
 
             visited = new boolean[height][width];
             total = width * height;
@@ -153,7 +154,8 @@ public class LabyrinthBacktrack implements Labyrinth {
                 int diffY = Direction.getDy(direction.getOpposite());
                 int prevX = startX + diffX;
                 int prevY = startY + diffY;
-                markVisited(prevX, prevY);
+                //markVisited(prevX, prevY);
+                deadendStart = true;
             }
 
             Stack<Integer> stack = new Stack<Integer>();
@@ -163,8 +165,18 @@ public class LabyrinthBacktrack implements Labyrinth {
 
             do {
                 int[] neighbours = getNeighbours(curX, curY);
+
                 if (neighbours.length > 0) {
-                    int[] neighbour = getRandomNeighbour(neighbours);
+                    int[] neighbour;
+                    if (deadendStart) {
+                        int x = curX + Direction.getDx(direction);
+                        int y = curY + Direction.getDy(direction);
+                        neighbour = new int[] {x, y};
+                        deadendStart = false;
+                    } else {
+                        neighbour = getRandomNeighbour(neighbours);
+                    }
+
                     removeWall(curX, curY, neighbour[0], neighbour[1]);
                     markVisited(neighbour[0], neighbour[1]);
                     stack.push(curX);

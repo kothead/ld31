@@ -16,7 +16,7 @@ import java.util.Stack;
  */
 public class BacktrackController implements LabyrinthController {
 
-    private static final int PROJECTION_DEEPNESS = 5;
+    private static final int PROJECTION_DEEPNESS = 6;
     private static final int MAX_PORTALS = 10;
     private static final int SEED = 100;
 
@@ -119,6 +119,8 @@ public class BacktrackController implements LabyrinthController {
     private void generateNext() {
         int[] deadends = findSomeDeadends();
         random.setSeed(SEED * deepness);
+        random.nextBoolean();
+
         int index = random.nextInt(deadends.length / 2) * 2;
         recreateLabyrinth(deadends[index], deadends[index + 1]);
         nextX = deadends[index];
@@ -137,8 +139,8 @@ public class BacktrackController implements LabyrinthController {
                 .setSeed(SEED * deepness)
                 .create();
         generateProjection(current, next, startX, startY, projectionNext);
-        if (previous != null)
-            generateProjection(current, previous, startX, startY, projectionPrev);
+//        if (previous != null)
+//            generateProjection(current, previous, startX, startY, projectionPrev);
     }
 
      private int[] findSomeDeadends() {
@@ -146,7 +148,7 @@ public class BacktrackController implements LabyrinthController {
         int count = 0;
         for (int i = 0; i < getHeight(); i++) {
             for (int j = 0; j < getWidth(); j++) {
-                if (isDeadend(current, j, i)) {
+                if (isDeadend(current, j, i) && isSuitableDeadend(current, j, i)) {
                     deadends[count * 2] = j;
                     deadends[count * 2 + 1] = i;
                     count++;
@@ -168,6 +170,12 @@ public class BacktrackController implements LabyrinthController {
         return count == 3;
     }
 
+    private boolean isSuitableDeadend(Labyrinth labyrinth, int x, int y) {
+        if (x == nextX && y == nextY) return false;
+        Direction entrance = getDeadendEntrance(labyrinth, x, y);
+        return isPosValid(labyrinth, x, y, entrance);
+    }
+
     private boolean hasWallRightPortal(Labyrinth labyrinth, int x, int y) {
         Direction entrance = getDeadendEntrance(labyrinth, x, y);
         if (entrance == Direction.LEFT) return false;
@@ -176,32 +184,9 @@ public class BacktrackController implements LabyrinthController {
 
     private boolean hasWallBottomPortal(Labyrinth labyrinth, int x, int y) {
         Direction entrance = getDeadendEntrance(labyrinth, x, y);
-        if (entrance == Direction.BOTTOM) return false;
+        if (entrance == Direction.TOP) return false;
         return labyrinth.hasWallBottom(x, y);
     }
-
-//    private int[] findCommonAisles(Labyrinth first, Labyrinth second, int x, int y) {
-//        int[] aisles = new int[MAX_PORTALS * 2];
-//        int count = 0;
-//        int width = Math.min(first.getWidth(), second.getWidth());
-//        int height = Math.min(first.getHeight(), second.getHeight());
-//
-//        for (int i = 0; i < height; i++) {
-//            for (int j = 0; j < width; j++) {
-//                if (isCommonAisle(first, second, j, i)) {
-//                    aisles[count * 2] = j;
-//                    aisles[count * 2 + 1] = i;
-//                    count++;
-//                    if (count * 2 >= aisles.length) return aisles;
-//                }
-//            }
-//        }
-//        return Arrays.copyOf(aisles, count * 2);
-//    }
-//
-//    private boolean isCommonAisle(Labyrinth first, Labyrinth second, int x, int y) {
-//
-//    }
 
     private void generateProjection(Labyrinth home, Labyrinth away,
                                     int startX, int startY, int[][] projection) {
@@ -217,8 +202,8 @@ public class BacktrackController implements LabyrinthController {
                 dir.getOpposite(), dir, XEN, 0);
         castOnProjection(home, projection, startX, startY,
                 dir, dir.getOpposite(), VIEW, 0);
-        Util.logArray(projection);
-        Util.logArray(((LabyrinthBacktrack) home).getWalls());
+//        Util.logArray(projection);
+//        Util.logArray(((LabyrinthBacktrack) away).getWalls());
     }
 
     private void castOnProjection(Labyrinth labyrinth, int[][] projection, int x, int y,
