@@ -6,6 +6,8 @@ package com.kothead.ld31.data;
 public enum Direction {
     TOP, RIGHT, BOTTOM, LEFT;
 
+    private static Direction[] directions;
+
     private Direction opposite;
 
     static {
@@ -13,6 +15,7 @@ public enum Direction {
         RIGHT.opposite = LEFT;
         BOTTOM.opposite = TOP;
         LEFT.opposite = RIGHT;
+        directions = new Direction[] {TOP, RIGHT, BOTTOM, LEFT};
     }
 
     public static Direction getByOffset(int dx, int dy) {
@@ -33,6 +36,10 @@ public enum Direction {
         if (dir == BOTTOM) return -1;
         if (dir == TOP) return 1;
         return 0;
+    }
+
+    public static Direction[] getDirections() {
+        return directions;
     }
 
     public Direction getOpposite() {

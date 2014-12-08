@@ -3,6 +3,7 @@ package com.kothead.ld31.model;
 import com.badlogic.gdx.Gdx;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.model.Labyrinth;
+import com.kothead.ld31.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class LabyrinthWTF implements Labyrinth {
         processDirection();
         calcSteps();
         generateWalls();
-        logArray(steps);
+        Util.logArray(steps);
     }
 
     private void processDirection() {
@@ -135,7 +136,7 @@ public class LabyrinthWTF implements Labyrinth {
             calcStep(x, y, i, FRESH_PATH_DEEPNESS);
         }
         Gdx.app.log("wall", "break line");
-        logArray(steps);
+        Util.logArray(steps);
         calcStep(curX, curY, last + 1, FRESH_PATH_DEEPNESS);
     }
 
@@ -192,16 +193,5 @@ public class LabyrinthWTF implements Labyrinth {
                 inner[j] = value;
             }
         }
-    }
-
-    private void logArray(int[][] array) {
-        for (int i = height - 1; i >= 0; i--) {
-            StringBuilder builder = new StringBuilder();
-            for (int j = 0; j < width; j++) {
-                builder.append(String.format("%2d ", array[i][j]));
-            }
-            Gdx.app.log("wall", builder.toString());
-        }
-        Gdx.app.log("wall", "--------------------------------------------");
     }
 }

@@ -48,6 +48,11 @@ public class LabyrinthBacktrack implements Labyrinth {
         return (walls[y][x] & WALL_BOTTOM) == WALL_BOTTOM;
     }
 
+    // TODO: delete
+    public int[][] getWalls() {
+        return walls;
+    }
+
     private void setWallRight(int x, int y) {
         walls[y][x] |= WALL_RIGHT;
     }
