@@ -60,8 +60,6 @@ public class Bullet extends Sprite {
 
     public boolean collided(Wall wall, float delta) {
         // TODO: move this somewhere
-        if (getX() < 0 || getX() > Configuration.WORLD_WIDTH
-                || getY() < 0 || getY() > Configuration.WORLD_HEIGHT) return true;
 
         Rectangle rectBullet = new Rectangle(getX(), getY(), getWidth(), getHeight());
         Rectangle rectWall = new Rectangle(wall.getX(), wall.getY(),
@@ -69,5 +67,10 @@ public class Bullet extends Sprite {
         Rectangle rectResult = new Rectangle();
 
         return Intersector.intersectRectangles(rectBullet, rectWall, rectResult);
+    }
+
+    public boolean farAway() {
+        return getX() < 0 || getX() > Configuration.WORLD_WIDTH
+                || getY() < 0 || getY() > Configuration.WORLD_HEIGHT;
     }
 }

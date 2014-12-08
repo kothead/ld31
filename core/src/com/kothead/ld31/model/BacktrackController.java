@@ -16,6 +16,9 @@ import static com.kothead.ld31.data.Configuration.LABYRINTH_WIDTH;
  */
 public class BacktrackController implements LabyrinthController {
 
+    private static final int RIGHT = 1;
+    private static final int BOTTOM = 2;
+
     private static final int PROJECTION_DEEPNESS = 10;
     private static final int MAX_PORTALS = 10;
 
@@ -31,6 +34,7 @@ public class BacktrackController implements LabyrinthController {
     private int prevX, prevY, nextX, nextY, playerX, playerY, deepness;
     private int[][] projectionPrev;
     private int[][] projectionNext;
+    private int[][] removedWalls;
     private boolean updated;
 
     public BacktrackController(long seed) {
@@ -38,6 +42,7 @@ public class BacktrackController implements LabyrinthController {
         random = Util.getRandom();
         projectionNext = new int[LABYRINTH_HEIGHT][LABYRINTH_WIDTH];
         projectionPrev = new int[LABYRINTH_HEIGHT][LABYRINTH_WIDTH];
+        removedWalls = new int[LABYRINTH_HEIGHT + 2][LABYRINTH_WIDTH + 2];
 
         current = new LabyrinthBacktrack.Builder()
                 .setCanMoveBack(false)
@@ -64,6 +69,14 @@ public class BacktrackController implements LabyrinthController {
 
     public boolean isPortal(int x, int y) {
         return projectionNext[y][x] == PORTAL;
+    }
+
+    public void destroyWallRight(int x, int y) {
+        removedWalls[y + 1][x + 1] |= RIGHT;
+    }
+
+    public void destroyWallBottom(int x, int y) {
+        removedWalls[y + 1][x + 1] |= BOTTOM;
     }
 
     @Override
@@ -94,6 +107,9 @@ public class BacktrackController implements LabyrinthController {
 
     @Override
     public boolean hasWallRight(int x, int y) {
+        if ((removedWalls[y + 1][x + 1] & RIGHT) == RIGHT) return false;
+        if (x <= -1 || y <= -1 || x >= getWidth() || y >= getHeight()) return true;
+
         int from = projectionNext[playerY][playerX];
         int where = projectionNext[y][x];
 
@@ -109,6 +125,9 @@ public class BacktrackController implements LabyrinthController {
 
     @Override
     public boolean hasWallBottom(int x, int y) {
+        if ((removedWalls[y + 1][x + 1] & BOTTOM) == BOTTOM) return false;
+        if (x <= -1 || y <= -1 || x >= getWidth() || y >= getHeight()) return true;
+
         int from = projectionNext[playerY][playerX];
         int where = projectionNext[y][x];
 
@@ -124,6 +143,7 @@ public class BacktrackController implements LabyrinthController {
     }
 
     private void moveIntoNext() {
+        clearRemovedWalls();
         previous = current;
         current = next;
         deepness++;
@@ -286,4 +306,11 @@ public class BacktrackController implements LabyrinthController {
                 && y >= 0 && y < labyrinth.getHeight();
     }
 
+    private void clearRemovedWalls() {
+        for (int i = 0; i < removedWalls.length; i++) {
+            for (int j = 0; j < removedWalls[0].length; j++) {
+                removedWalls[i][j] = 0;
+            }
+        }
+    }
 }

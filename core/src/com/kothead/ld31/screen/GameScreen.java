@@ -32,6 +32,7 @@ public class GameScreen extends BaseScreen {
 
     private static final String TEXTURE_FLOOR = "floor";
     private static final int MAX_ENEMIES = 20;
+    private static final int DAMAGE_TO_DESTROY_WALL = 1;
 
     public static long seed = 100;
 
@@ -103,8 +104,8 @@ public class GameScreen extends BaseScreen {
         shapes().begin(ShapeRenderer.ShapeType.Filled);
 
         player.setNotBlocked();
-        for (int i = 0; i < Configuration.LABYRINTH_HEIGHT; i++) {
-            for (int j = 0; j < Configuration.LABYRINTH_WIDTH; j++) {
+        for (int i = 0; i <= Configuration.LABYRINTH_HEIGHT; i++) {
+            for (int j = -1; j < Configuration.LABYRINTH_WIDTH; j++) {
                 if (controller.hasWallBottom(j, i)) {
                     wall.setPosition(true, j, i);
                     player.processWall(delta, wall);
@@ -167,6 +168,18 @@ public class GameScreen extends BaseScreen {
         while (iterBullet.hasNext()) {
             Bullet bullet = iterBullet.next();
             if (bullet.collided(wall, delta)) {
+                iterBullet.remove();
+                if (bullet.getDamage() >= DAMAGE_TO_DESTROY_WALL) {
+                    if (wall.isRight()) {
+                        controller.destroyWallRight(wall.getGridX(), wall.getGridY());
+                    } else {
+                        controller.destroyWallBottom(wall.getGridX(), wall.getGridY());
+                    }
+                }
+                continue;
+            }
+
+            if (bullet.farAway()) {
                 iterBullet.remove();
                 continue;
             }
