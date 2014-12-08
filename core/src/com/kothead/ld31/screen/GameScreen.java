@@ -29,12 +29,11 @@ import java.util.Random;
  */
 public class GameScreen extends BaseScreen {
 
-    private static final long SEED = 100;
-
     private static final String TEXTURE_FLOOR = "floor";
     private static final int MAX_ENEMIES = 20;
 
-    private long seed;
+    public static long seed = 100;
+
     private TiledSprite background;
     private Player player;
     private Wall wall;
@@ -47,12 +46,12 @@ public class GameScreen extends BaseScreen {
     private Messages messages;
 
     public GameScreen(LD31 game) {
-        this(game, SEED);
+        this(game, GameScreen.seed);
     }
 
     public GameScreen(LD31 game, long seed) {
         super(game);
-        this.seed = seed;
+        GameScreen.seed = seed;
 
         background = new TiledSprite(ImageCache.getTexture(TEXTURE_FLOOR),
                 getWorldWidth(), getWorldHeight());
@@ -143,6 +142,10 @@ public class GameScreen extends BaseScreen {
         stage().act(delta);
         stage().draw();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        if (player.isDead()) {
+            getGame().setGameOverScreen(false);
+        }
     }
 
     private void processBullets(Wall wall, float delta) {

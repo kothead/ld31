@@ -25,7 +25,7 @@ public class Player extends Walker {
     private int exp;
     private int kill;
     private int level;
-    private int life;
+    private int life = START_LIFE;
 
     public Player() {
         setSize(SIZE, SIZE);
@@ -62,6 +62,10 @@ public class Player extends Walker {
 
     public void addExp(int exp) {
         this.exp += exp;
+    }
+
+    public boolean isDead() {
+        return life <= 0;
     }
 
     public void decLife() {

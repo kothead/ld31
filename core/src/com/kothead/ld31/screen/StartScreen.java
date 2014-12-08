@@ -28,7 +28,7 @@ public class StartScreen extends BaseScreen {
         title = new Label("PaPaPaPath!!!", skin, "title");
         btnStart = new TextButton("Start", skin, "default");
         btnExit = new TextButton("Exit", skin, "default");
-        textField = new TextField("seed (numbers only)", skin, "default");
+        textField = new TextField(Long.toString(GameScreen.seed), skin, "default");
         info = new Label("kothead 2014 Ludum Dare 31", skin, "message");
         Table table = new Table();
         table.setFillParent(true);
