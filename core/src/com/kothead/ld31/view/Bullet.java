@@ -12,12 +12,11 @@ import com.kothead.ld31.data.Direction;
  */
 public class Bullet extends Sprite {
 
-    public static final int START_SPEED = 200;
+    public static final int START_SPEED = 100;
     public static final int START_SIZE = 5;
     public static final int START_DAMAGE = 10;
 
-    public static final int UPGRADE_SPEED = 5;
-    public static final int UPGRADE_SIZE = 1;
+    public static final int UPGRADE_SPEED = 10;
     public static final int UPGRADE_DAMAGE = 10;
 
     private int damage;
@@ -26,8 +25,7 @@ public class Bullet extends Sprite {
     public Bullet(int level, Direction direction) {
         damage = START_DAMAGE + UPGRADE_DAMAGE * level;
 
-        int size = START_SIZE + UPGRADE_SIZE * level;
-        setSize(size, size);
+        setSize(START_SIZE, START_SIZE);
 
         int speed = START_SPEED + UPGRADE_SPEED * level;
         switch (direction) {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
@@ -42,6 +43,7 @@ public class GameScreen extends BaseScreen {
     private Array<Bullet> bullets;
     private Array<Enemy> enemies;
     private Board board;
+    private Portal portal;
 
     private Messages messages;
 
@@ -59,6 +61,7 @@ public class GameScreen extends BaseScreen {
         player = new Player();
         float position = (Configuration.LABYRINTH_CELL_SIZE - Player.SIZE) / 2f;
         player.setPosition(position, position);
+        portal = new Portal();
         wall = new Wall();
 
         controller = new BacktrackController(seed);
@@ -86,6 +89,14 @@ public class GameScreen extends BaseScreen {
         batch().begin();
         background.draw(batch(), 0, 0);
         board.draw(batch());
+        for (int i = 0; i < controller.getHeight(); i++) {
+            for (int j = 0; j < controller.getWidth(); j++) {
+                if (controller.isPortal(j, i)) {
+                    portal.setPositionGrid(j, i);
+                    portal.draw(batch());
+                }
+            }
+        }
         batch().end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -143,6 +154,9 @@ public class GameScreen extends BaseScreen {
         stage().draw();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
+        if (player.levelUp()) {
+            messages.setMessage(Messages.MESSAGE_NEW_LEVEL);
+        }
         if (player.isDead()) {
             getGame().setGameOverScreen(false);
         }
@@ -227,6 +241,10 @@ public class GameScreen extends BaseScreen {
 
                 case Input.Keys.LEFT:
                     bullets.add(player.shoot(Direction.LEFT));
+                    return true;
+
+                case Input.Keys.ESCAPE:
+                    getGame().setStartScreen();
                     return true;
             }
 

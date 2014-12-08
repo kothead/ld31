@@ -62,6 +62,10 @@ public class BacktrackController implements LabyrinthController {
         return deepness;
     }
 
+    public boolean isPortal(int x, int y) {
+        return projectionNext[y][x] == PORTAL;
+    }
+
     @Override
     public void moveTo(int x, int y) {
         updated = false;

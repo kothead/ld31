@@ -23,6 +23,7 @@ public class Player extends Walker {
     private static final int MAX_LIFE = 3;
 
     private int exp;
+    private int nextLevelExp = 200;
     private int kill;
     private int level;
     private int life = START_LIFE;
@@ -62,6 +63,15 @@ public class Player extends Walker {
 
     public void addExp(int exp) {
         this.exp += exp;
+    }
+
+    public boolean levelUp() {
+        if (exp >= nextLevelExp) {
+            level++;
+            nextLevelExp *= 2;
+            return true;
+        }
+        return false;
     }
 
     public boolean isDead() {

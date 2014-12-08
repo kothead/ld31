@@ -23,7 +23,7 @@ public class Messages {
             "",
             "press SPACE",
             "gain +%s exp",
-            "new level gained"
+            "level up!"
     };
 
     private static final float MESSAGE_HORIZONTAL_PADDING = -20;
