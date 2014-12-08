@@ -108,6 +108,15 @@ public class GameScreen extends BaseScreen {
             bullet.draw(shapes(), delta);
         }
 
+        Iterator<Enemy> enemyIter = enemies.iterator();
+        while (enemyIter.hasNext()) {
+            Enemy enemy = enemyIter.next();
+            if (enemy.grab()) {
+                enemyIter.remove();
+                player.decLife();
+            }
+        }
+
         for (Enemy enemy: enemies) {
             enemy.process();
             enemy.draw(delta, shapes());

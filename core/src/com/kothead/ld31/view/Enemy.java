@@ -104,6 +104,14 @@ public class Enemy extends Walker {
         return false;
     }
 
+    public boolean grab() {
+        rectEnemy.set(getX(), getY(), getWidth(), getHeight());
+        //TODO: change bullet to player's rect
+        rectBullet.set(player.getX(), player.getY(),
+                player.getWidth(), player.getHeight());
+        return Intersector.intersectRectangles(rectEnemy, rectBullet, rectResult);
+    }
+
     private Direction decideWhereToGo(Direction goal) {
         Direction sight = hasPlayerInSight();
         if (sight != null) {

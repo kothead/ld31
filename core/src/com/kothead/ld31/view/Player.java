@@ -19,10 +19,13 @@ public class Player extends Walker {
     public static final int SIZE = 10;
 
     private static final float SPEED = 50f;
+    private static final int START_LIFE = 1;
+    private static final int MAX_LIFE = 3;
 
     private int exp;
     private int kill;
     private int level;
+    private int life;
 
     public Player() {
         setSize(SIZE, SIZE);
@@ -59,6 +62,14 @@ public class Player extends Walker {
 
     public void addExp(int exp) {
         this.exp += exp;
+    }
+
+    public void decLife() {
+        life--;
+    }
+
+    public void incLife() {
+        life++;
     }
 
     @Override
