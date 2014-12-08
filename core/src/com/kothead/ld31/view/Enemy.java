@@ -93,6 +93,10 @@ public class Enemy extends Walker {
         return life <= 0;
     }
 
+    public int getExp() {
+        return exp;
+    }
+
     public boolean hit(Bullet bullet) {
         rectEnemy.set(getX(), getY(), getWidth(), getHeight());
         rectBullet.set(bullet.getX(), bullet.getY(),
@@ -221,6 +225,6 @@ public class Enemy extends Walker {
         Random random = Util.getRandom();
         random.setSeed(seed * getGridX() * getGridY());
         random.nextBoolean();
-        return (int) (random.nextInt((int) (EXP_PER_LIFE * life)) * EXP_FLOATING);
+        return (int) (EXP_PER_LIFE * life + random.nextInt((int) (EXP_PER_LIFE * life)) * EXP_FLOATING);
     }
 }

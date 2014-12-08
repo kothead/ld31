@@ -161,6 +161,9 @@ public class GameScreen extends BaseScreen {
             Enemy enemy = iterEnemy.next();
             if (enemy.isDead()) {
                 iterEnemy.remove();
+                int exp = enemy.getExp();
+                player.addExp(exp);
+                messages.setMessage(Messages.MESSAGE_GAIN_EXP, exp);
             }
         }
     }

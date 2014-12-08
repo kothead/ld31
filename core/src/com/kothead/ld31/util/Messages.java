@@ -63,12 +63,12 @@ public class Messages {
         }
     }
 
-    public void setMessage(int message) {
+    public void setMessage(int message, Object... objs) {
         if ((current == 0 || current == 1 || current == 2)
                 && message != 0 && message != 1
                 && message != 2 && message != MESSAGE_NULL) return;
         current = message;
         timer = 0;
-        label.setText(DEFAULT_MESSAGES[message]);
+        label.setText(String.format(DEFAULT_MESSAGES[message], objs));
     }
 }
