@@ -14,10 +14,6 @@ public class LabyrinthBacktrack implements Labyrinth {
     public static final int WALL_RIGHT = 1;
     public static final int WALL_BOTTOM = 2;
 
-    private static final int RETAIN_SIZE = 3;
-
-    private int seed;
-    private Random random;
     private int width, height;
     private int[][] walls;
 
@@ -46,11 +42,6 @@ public class LabyrinthBacktrack implements Labyrinth {
     @Override
     public boolean hasWallBottom(int x, int y) {
         return (walls[y][x] & WALL_BOTTOM) == WALL_BOTTOM;
-    }
-
-    // TODO: delete
-    public int[][] getWalls() {
-        return walls;
     }
 
     private void setWallRight(int x, int y) {

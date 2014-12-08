@@ -9,6 +9,9 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.model.LabyrinthController;
+import com.kothead.ld31.util.Util;
+
+import java.util.Random;
 
 /**
  * Created by st on 12/8/14.
@@ -21,26 +24,35 @@ public class Enemy extends Walker {
     private static final float SPEED_FACTOR = 2.5f;
     private static final int START_LIFE = 50;
     private static final int LIFE_PER_LEVEL = 50;
+    private static final float EXP_PER_LIFE = 1f;
+    private static final float EXP_FLOATING = 0.1f;
+    private static final int MIN_DISTANCE_TO_PLAYER = 2;
+
+    private static Random random = new Random();
 
     private LabyrinthController labyrinth;
     private Player player;
     private Direction goal;
-    private int life;
+    private int life, exp;
     private boolean seePlayer;
     private Rectangle rectEnemy, rectBullet, rectResult;
+    private long seed;
 
-    public Enemy(LabyrinthController labyrinth, Player player) {
+    public Enemy(LabyrinthController labyrinth, Player player, long seed) {
         setSize(SIZE, SIZE);
         setSpeedValue(START_SPEED);
         this.labyrinth = labyrinth;
         this.player = player;
+        this.seed = seed;
         rectEnemy = new Rectangle();
         rectBullet = new Rectangle();
         rectResult = new Rectangle();
+        generatePosition();
     }
 
     public void setLevel(int level) {
         life = START_LIFE + LIFE_PER_LEVEL * level;
+        exp = generateExpCount();
     }
 
     @Override
@@ -180,5 +192,27 @@ public class Enemy extends Walker {
     private boolean isPosValid(int x, int y) {
         return x >= 0 && x < labyrinth.getWidth()
                 && y >= 0 && y < labyrinth.getHeight();
+    }
+
+    private void generatePosition() {
+        Random random = Util.getRandom();
+        random.setSeed(seed);
+        random.nextBoolean();
+        float x, y;
+        do {
+            x = (int) (random.nextFloat() * LABYRINTH_WIDTH) * LABYRINTH_CELL_SIZE
+                    + LABYRINTH_CELL_SIZE / 2 - getWidth() / 2;
+            y = (int) (random.nextFloat() * LABYRINTH_HEIGHT) * LABYRINTH_CELL_SIZE
+                    + LABYRINTH_CELL_SIZE / 2 - getHeight() / 2;
+        } while (Math.abs(getGridX(x) - player.getGridX()) < MIN_DISTANCE_TO_PLAYER
+                && Math.abs(getGridY(y) - player.getGridY()) < MIN_DISTANCE_TO_PLAYER);
+        setPosition(x, y);
+    }
+
+    private int generateExpCount() {
+        Random random = Util.getRandom();
+        random.setSeed(seed * getGridX() * getGridY());
+        random.nextBoolean();
+        return (int) (random.nextInt((int) (EXP_PER_LIFE * life)) * EXP_FLOATING);
     }
 }

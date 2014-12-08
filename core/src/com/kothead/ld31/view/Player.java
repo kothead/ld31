@@ -20,6 +20,8 @@ public class Player extends Walker {
 
     private static final float SPEED = 50f;
 
+    private int exp;
+    private int kill;
     private int level;
 
     public Player() {
@@ -45,6 +47,18 @@ public class Player extends Walker {
         bullet.setX(getX() + getWidth() / 2 - bullet.getWidth() / 2);
         bullet.setY(getY() + getHeight() / 2 - bullet.getHeight() / 2);
         return bullet;
+    }
+
+    public int getKillCount() {
+        return kill;
+    }
+
+    public void incKillCount() {
+        kill++;
+    }
+
+    public void addExp(int exp) {
+        this.exp += exp;
     }
 
     @Override

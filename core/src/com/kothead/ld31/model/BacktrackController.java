@@ -1,16 +1,15 @@
 package com.kothead.ld31.model;
 
-import static com.kothead.ld31.data.Configuration.LABYRINTH_WIDTH;
-import static com.kothead.ld31.data.Configuration.LABYRINTH_HEIGHT;
-
 import com.badlogic.gdx.Gdx;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.util.Util;
-import com.kothead.ld31.view.Enemy;
 
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
+
+import static com.kothead.ld31.data.Configuration.LABYRINTH_HEIGHT;
+import static com.kothead.ld31.data.Configuration.LABYRINTH_WIDTH;
 
 /**
  * Created by st on 12/7/14.
@@ -19,13 +18,13 @@ public class BacktrackController implements LabyrinthController {
 
     private static final int PROJECTION_DEEPNESS = 10;
     private static final int MAX_PORTALS = 10;
-    private static final int SEED = 100;
 
     private static final int HOME = 0;
     private static final int VIEW = 1;
     private static final int PORTAL = 2;
     private static final int XEN = 3;
 
+    private long seed;
     private Random random;
     private Stack<Integer> visited;
     private Labyrinth previous, current, next;
@@ -34,8 +33,9 @@ public class BacktrackController implements LabyrinthController {
     private int[][] projectionNext;
     private boolean updated;
 
-    public BacktrackController() {
-        random = new Random();
+    public BacktrackController(long seed) {
+        this.seed = seed;
+        random = Util.getRandom();
         projectionNext = new int[LABYRINTH_HEIGHT][LABYRINTH_WIDTH];
         projectionPrev = new int[LABYRINTH_HEIGHT][LABYRINTH_WIDTH];
 
@@ -43,7 +43,7 @@ public class BacktrackController implements LabyrinthController {
                 .setCanMoveBack(false)
                 .setWidth(LABYRINTH_WIDTH)
                 .setHeight(LABYRINTH_HEIGHT)
-                .setSeed(SEED)
+                .setSeed(seed)
                 .setStartX(0)
                 .setStartY(0)
                 .create();
@@ -132,7 +132,7 @@ public class BacktrackController implements LabyrinthController {
 
     private void generateNext() {
         int[] deadends = findSomeDeadends();
-        random.setSeed(SEED * deepness);
+        random.setSeed(seed * deepness);
         random.nextBoolean();
 
         int index = random.nextInt(deadends.length / 2) * 2;
@@ -150,7 +150,7 @@ public class BacktrackController implements LabyrinthController {
                 .setStartX(startX)
                 .setStartY(startY)
                 .setDirection(entrance.getOpposite())
-                .setSeed(SEED * deepness)
+                .setSeed(seed * deepness)
                 .create();
         generateProjection(current, next, startX, startY, projectionNext);
 //        if (previous != null)
