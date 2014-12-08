@@ -32,6 +32,7 @@ public class Lightmap {
 
     public void draw(ShapeRenderer renderer) {
         generateLightmap();
+        if (!Configuration.SHADOW_ON) return;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 renderer.setColor(0, 0, 0, map[i][j]);

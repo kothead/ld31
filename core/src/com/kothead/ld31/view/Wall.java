@@ -11,8 +11,8 @@ import com.badlogic.gdx.math.Rectangle;
  */
 public class Wall extends Sprite {
 
+    public static final int WALL_HEIGHT = 4;
     private static final int WALL_WIDTH = 36;
-    private static final int WALL_HEIGHT = 4;
 
     public Wall() {
     }

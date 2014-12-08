@@ -1,21 +1,24 @@
 package com.kothead.ld31.screen;
 
+import static com.kothead.ld31.data.Configuration.*;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Array;
 import com.kothead.ld31.LD31;
 import com.kothead.ld31.data.Configuration;
+import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.data.ImageCache;
 import com.kothead.ld31.model.BacktrackController;
 import com.kothead.ld31.model.LabyrinthBacktrack;
 import com.kothead.ld31.model.LabyrinthController;
-import com.kothead.ld31.view.Lightmap;
-import com.kothead.ld31.view.Player;
-import com.kothead.ld31.view.TiledSprite;
-import com.kothead.ld31.view.Wall;
+import com.kothead.ld31.view.*;
+
+import java.util.Iterator;
 
 /**
  * Created by st on 12/7/14.
@@ -23,14 +26,17 @@ import com.kothead.ld31.view.Wall;
 public class GameScreen extends BaseScreen {
 
     private static final String TEXTURE_FLOOR = "floor";
+    private static final int MAX_ENEMIES = 20;
 
     private SpriteBatch batch;
     private ShapeRenderer shapes;
     private TiledSprite background;
     private Player player;
     private Wall wall;
-    private LabyrinthController controller;
+    private BacktrackController controller;
     private Lightmap lightmap;
+    private Array<Bullet> bullets;
+    private Array<Enemy> enemies;
 
     public GameScreen(LD31 game) {
         super(game);
@@ -45,7 +51,11 @@ public class GameScreen extends BaseScreen {
         wall = new Wall();
 
         controller = new BacktrackController();
+        bullets = new Array<Bullet>();
+        enemies = new Array<Enemy>();
         lightmap = new Lightmap(controller);
+
+        recreateThingsOnMap();
 
         Gdx.input.setInputProcessor(new Processor());
     }
@@ -78,17 +88,31 @@ public class GameScreen extends BaseScreen {
                     wall.setPosition(true, j, i);
                     player.processWall(delta, wall);
                     wall.draw(delta, shapes);
+                    processBullets(wall, delta);
                 }
 
                 if (controller.hasWallRight(j, i)) {
                     wall.setPosition(false, j, i);
                     player.processWall(delta, wall);
                     wall.draw(delta, shapes);
+                    processBullets(wall, delta);
                 }
             }
         }
 
+        for (Bullet bullet: bullets) {
+            bullet.draw(shapes, delta);
+        }
+
+        for (Enemy enemy: enemies) {
+            enemy.process();
+            enemy.draw(delta, shapes);
+        }
+
         player.updateLabyrinth(delta, controller);
+        if (controller.isUpdated()) {
+            recreateThingsOnMap();
+        }
         player.draw(delta, shapes);
 
         lightmap.setLightPosition(player.getGridX(), player.getGridY());
@@ -96,6 +120,28 @@ public class GameScreen extends BaseScreen {
 
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
+    private void processBullets(Wall wall, float delta) {
+        Iterator<Bullet> iter = bullets.iterator();
+        while (iter.hasNext()) {
+            Bullet bullet = iter.next();
+            if (bullet.collided(wall, delta)) iter.remove();
+        }
+    }
+
+    private void recreateThingsOnMap() {
+        enemies.clear();
+        int count = (int) (Math.random() * MAX_ENEMIES);
+        for (int i = 0; i < count; i++) {
+            Enemy enemy = new Enemy(controller, player);
+            float x = (int) (Math.random() * LABYRINTH_WIDTH) * LABYRINTH_CELL_SIZE
+                    + LABYRINTH_CELL_SIZE / 2 - enemy.getWidth() / 2;
+            float y = (int) (Math.random() * LABYRINTH_HEIGHT) * LABYRINTH_CELL_SIZE
+                    + LABYRINTH_CELL_SIZE / 2 - enemy.getHeight() / 2;
+            enemy.setPosition(x, y);
+            enemies.add(enemy);
+        }
     }
 
     private class Processor extends InputAdapter {
@@ -116,6 +162,22 @@ public class GameScreen extends BaseScreen {
 
                 case Input.Keys.D:
                     player.stopRight();
+                    return true;
+
+                case Input.Keys.UP:
+                    bullets.add(player.shoot(Direction.TOP));
+                    return true;
+
+                case Input.Keys.RIGHT:
+                    bullets.add(player.shoot(Direction.RIGHT));
+                    return true;
+
+                case Input.Keys.DOWN:
+                    bullets.add(player.shoot(Direction.BOTTOM));
+                    return true;
+
+                case Input.Keys.LEFT:
+                    bullets.add(player.shoot(Direction.LEFT));
                     return true;
             }
 

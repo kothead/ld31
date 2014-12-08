@@ -6,6 +6,7 @@ import static com.kothead.ld31.data.Configuration.LABYRINTH_HEIGHT;
 import com.badlogic.gdx.Gdx;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.util.Util;
+import com.kothead.ld31.view.Enemy;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -16,7 +17,7 @@ import java.util.Stack;
  */
 public class BacktrackController implements LabyrinthController {
 
-    private static final int PROJECTION_DEEPNESS = 6;
+    private static final int PROJECTION_DEEPNESS = 10;
     private static final int MAX_PORTALS = 10;
     private static final int SEED = 100;
 
@@ -31,6 +32,7 @@ public class BacktrackController implements LabyrinthController {
     private int prevX, prevY, nextX, nextY, playerX, playerY, deepness;
     private int[][] projectionPrev;
     private int[][] projectionNext;
+    private boolean updated;
 
     public BacktrackController() {
         random = new Random();
@@ -52,8 +54,14 @@ public class BacktrackController implements LabyrinthController {
         generateNext();
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
     @Override
     public void moveTo(int x, int y) {
+        updated = false;
+
         int oldX = playerX;
         int oldY = playerY;
         playerX = x;
@@ -62,6 +70,7 @@ public class BacktrackController implements LabyrinthController {
         int now = projectionNext[y][x];
         if (was == PORTAL && now == XEN) {
             moveIntoNext();
+            updated = true;
         }
     }
 
