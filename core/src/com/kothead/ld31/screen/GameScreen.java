@@ -14,8 +14,6 @@ import com.kothead.ld31.data.Configuration;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.data.ImageCache;
 import com.kothead.ld31.model.BacktrackController;
-import com.kothead.ld31.model.LabyrinthBacktrack;
-import com.kothead.ld31.model.LabyrinthController;
 import com.kothead.ld31.view.*;
 
 import java.util.Iterator;
@@ -37,6 +35,7 @@ public class GameScreen extends BaseScreen {
     private Lightmap lightmap;
     private Array<Bullet> bullets;
     private Array<Enemy> enemies;
+    private Board board;
 
     public GameScreen(LD31 game) {
         super(game);
@@ -76,6 +75,7 @@ public class GameScreen extends BaseScreen {
 
         batch.begin();
         background.draw(batch, 0, 0);
+        board.draw(batch);
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -162,6 +162,10 @@ public class GameScreen extends BaseScreen {
             enemy.setLevel(controller.getLevel());
             enemies.add(enemy);
         }
+
+        board = new Board();
+        board.randomGridX();
+        board.randomGridY();
     }
 
     private class Processor extends InputAdapter {
