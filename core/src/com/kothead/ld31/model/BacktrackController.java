@@ -58,6 +58,10 @@ public class BacktrackController implements LabyrinthController {
         return updated;
     }
 
+    public int getLevel() {
+        return deepness;
+    }
+
     @Override
     public void moveTo(int x, int y) {
         updated = false;
@@ -118,6 +122,7 @@ public class BacktrackController implements LabyrinthController {
     private void moveIntoNext() {
         previous = current;
         current = next;
+        deepness++;
         generateNext();
     }
 
@@ -180,7 +185,10 @@ public class BacktrackController implements LabyrinthController {
     }
 
     private boolean isSuitableDeadend(Labyrinth labyrinth, int x, int y) {
-        if (x == nextX && y == nextY) return false;
+        if (x == nextX && y == nextY && x != 0) return false;
+        if (x == 0 || y == 0) return false;
+        if (x == labyrinth.getWidth() - 1
+                || y == labyrinth.getHeight() - 1) return false;
         Direction entrance = getDeadendEntrance(labyrinth, x, y);
         return isPosValid(labyrinth, x, y, entrance);
     }

@@ -123,10 +123,29 @@ public class GameScreen extends BaseScreen {
     }
 
     private void processBullets(Wall wall, float delta) {
-        Iterator<Bullet> iter = bullets.iterator();
-        while (iter.hasNext()) {
-            Bullet bullet = iter.next();
-            if (bullet.collided(wall, delta)) iter.remove();
+        Iterator<Bullet> iterBullet = bullets.iterator();
+        while (iterBullet.hasNext()) {
+            Bullet bullet = iterBullet.next();
+            if (bullet.collided(wall, delta)) {
+                iterBullet.remove();
+                continue;
+            }
+
+            for (int i = 0; i < enemies.size; i++) {
+                Enemy enemy = enemies.get(i);
+                if (enemy.hit(bullet)) {
+                    iterBullet.remove();
+                    break;
+                }
+            }
+        }
+
+        Iterator<Enemy> iterEnemy = enemies.iterator();
+        while (iterEnemy.hasNext()) {
+            Enemy enemy = iterEnemy.next();
+            if (enemy.isDead()) {
+                iterEnemy.remove();
+            }
         }
     }
 
@@ -140,6 +159,7 @@ public class GameScreen extends BaseScreen {
             float y = (int) (Math.random() * LABYRINTH_HEIGHT) * LABYRINTH_CELL_SIZE
                     + LABYRINTH_CELL_SIZE / 2 - enemy.getHeight() / 2;
             enemy.setPosition(x, y);
+            enemy.setLevel(controller.getLevel());
             enemies.add(enemy);
         }
     }

@@ -5,6 +5,8 @@ import static com.kothead.ld31.view.Wall.*;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.model.LabyrinthController;
 
@@ -18,18 +20,27 @@ public class Enemy extends Walker {
     private static final float START_SPEED = 25f;
     private static final float SPEED_FACTOR = 2.5f;
     private static final int START_LIFE = 50;
+    private static final int LIFE_PER_LEVEL = 50;
 
     private LabyrinthController labyrinth;
     private Player player;
     private Direction goal;
     private int life;
     private boolean seePlayer;
+    private Rectangle rectEnemy, rectBullet, rectResult;
 
     public Enemy(LabyrinthController labyrinth, Player player) {
         setSize(SIZE, SIZE);
         setSpeedValue(START_SPEED);
         this.labyrinth = labyrinth;
         this.player = player;
+        rectEnemy = new Rectangle();
+        rectBullet = new Rectangle();
+        rectResult = new Rectangle();
+    }
+
+    public void setLevel(int level) {
+        life = START_LIFE + LIFE_PER_LEVEL * level;
     }
 
     @Override
@@ -64,6 +75,21 @@ public class Enemy extends Walker {
             setVx(getVx() * SPEED_FACTOR);
             setVy(getVy() * SPEED_FACTOR);
         }
+    }
+
+    public boolean isDead() {
+        return life <= 0;
+    }
+
+    public boolean hit(Bullet bullet) {
+        rectEnemy.set(getX(), getY(), getWidth(), getHeight());
+        rectBullet.set(bullet.getX(), bullet.getY(),
+                bullet.getWidth(), bullet.getHeight());
+        if (Intersector.intersectRectangles(rectEnemy, rectBullet, rectResult)) {
+            life -= bullet.getDamage();
+            return true;
+        }
+        return false;
     }
 
     private Direction decideWhereToGo(Direction goal) {
