@@ -15,6 +15,7 @@ import com.kothead.ld31.LD31;
 import com.kothead.ld31.data.Configuration;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.data.ImageCache;
+import com.kothead.ld31.data.SkinCache;
 import com.kothead.ld31.model.BacktrackController;
 import com.kothead.ld31.util.Messages;
 import com.kothead.ld31.util.Util;
@@ -28,12 +29,12 @@ import java.util.Random;
  */
 public class GameScreen extends BaseScreen {
 
-    private static final int SEED = 100;
+    private static final long SEED = 100;
 
     private static final String TEXTURE_FLOOR = "floor";
     private static final int MAX_ENEMIES = 20;
 
-    private int seed = SEED;
+    private long seed;
     private TiledSprite background;
     private Player player;
     private Wall wall;
@@ -46,7 +47,13 @@ public class GameScreen extends BaseScreen {
     private Messages messages;
 
     public GameScreen(LD31 game) {
+        this(game, SEED);
+    }
+
+    public GameScreen(LD31 game, long seed) {
         super(game);
+        this.seed = seed;
+
         background = new TiledSprite(ImageCache.getTexture(TEXTURE_FLOOR),
                 getWorldWidth(), getWorldHeight());
 
@@ -60,7 +67,7 @@ public class GameScreen extends BaseScreen {
         enemies = new Array<Enemy>();
         lightmap = new Lightmap(controller);
 
-        Label label = new Label(null, getLabelStyle());
+        Label label = new Label(null, SkinCache.getDefaultSkin(), "message");
         stage().addActor(label);
         messages = new Messages(label, player);
         messages.setMessage(Messages.START_TUTORIAL);

@@ -1,6 +1,6 @@
 
 pack.png
-size: 512,512
+size: 128,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -11,16 +11,9 @@ floor
   orig: 36, 36
   offset: 0, 0
   index: -1
-font
-  rotate: false
-  xy: 2, 42
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
 message
   rotate: false
-  xy: 262, 262
+  xy: 42, 2
   size: 36, 36
   orig: 36, 36
   offset: 0, 0

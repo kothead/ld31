@@ -31,7 +31,6 @@ public abstract class BaseScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private ShapeRenderer shapes;
     private Stage stage;
-    private Label.LabelStyle labelStyle;
 
     public BaseScreen(LD31 game) {
         this.game = game;
@@ -42,11 +41,6 @@ public abstract class BaseScreen extends ScreenAdapter {
         batch = new SpriteBatch();
         stage = new Stage(getViewport());
         shapes = new ShapeRenderer();
-
-        BitmapFont font = new BitmapFont(Gdx.files.internal(FONT_FILE),
-                ImageCache.getTexture(TEXTURE_FONT));
-        font.setScale(0.8f);
-        labelStyle = new Label.LabelStyle(font, Color.GREEN);
     }
 
     @Override
@@ -89,10 +83,6 @@ public abstract class BaseScreen extends ScreenAdapter {
 
     public Stage stage() {
         return stage;
-    }
-
-    public Label.LabelStyle getLabelStyle() {
-        return labelStyle;
     }
 
     private void calcWorldSize() {
