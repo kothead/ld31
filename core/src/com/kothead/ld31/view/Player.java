@@ -1,20 +1,13 @@
 package com.kothead.ld31.view;
 
-import static com.kothead.ld31.data.Configuration.LABYRINTH_CELL_SIZE;
-import static com.kothead.ld31.data.Configuration.LABYRINTH_HEIGHT;
-import static com.kothead.ld31.data.Configuration.LABYRINTH_WIDTH;
-
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
 import com.kothead.ld31.data.Configuration;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.data.SoundCache;
-import com.kothead.ld31.model.LabyrinthBacktrack;
 import com.kothead.ld31.model.LabyrinthController;
-import com.kothead.ld31.screen.GameScreen;
+
+import static com.kothead.ld31.data.Configuration.*;
 
 /**
  * Created by st on 12/7/14.
@@ -41,8 +34,8 @@ public class Player extends Walker {
     public void updateLabyrinth(float delta, LabyrinthController controller) {
         int oldX = getGridX();
         int oldY = getGridY();
-        int curX = getGridX(getX() + delta * getVx());
-        int curY = getGridY(getY() + delta * getVy());
+        int curX = getGridX(getX() + getWidth() / 2f + delta * getVx());
+        int curY = getGridY(getY() + getHeight() / 2f + delta * getVy());
 
         if ((curX != oldX || curY != oldY)
                 && curX >= 0 && curX < Configuration.LABYRINTH_WIDTH
@@ -74,7 +67,8 @@ public class Player extends Walker {
     public boolean levelUp() {
         if (exp >= nextLevelExp) {
             level++;
-            nextLevelExp *= 2;
+            int inc = (int) (nextLevelExp * 0.50);
+            nextLevelExp += inc < 300 ? 300 : inc;
             return true;
         }
         return false;

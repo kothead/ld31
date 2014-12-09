@@ -13,5 +13,5 @@ public class Configuration {
     public static final int LABYRINTH_HEIGHT = 10;
     public static final int LABYRINTH_CELL_SIZE = 36;
 
-    public static final boolean SHADOW_ON = false;
+    public static final boolean SHADOW_ON = true;
 }

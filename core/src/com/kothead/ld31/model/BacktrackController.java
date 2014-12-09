@@ -1,7 +1,6 @@
 package com.kothead.ld31.model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.kothead.ld31.data.Direction;
 import com.kothead.ld31.data.SoundCache;
 import com.kothead.ld31.util.Util;
@@ -246,8 +245,7 @@ public class BacktrackController implements LabyrinthController {
                 dir.getOpposite(), dir, XEN, 0);
         castOnProjection(home, projection, startX, startY,
                 dir, dir.getOpposite(), VIEW, 0);
-//        Util.logArray(projection);
-//        Util.logArray(((LabyrinthBacktrack) away).getWalls());
+        //Util.logArray(projection);
     }
 
     private void castOnProjection(Labyrinth labyrinth, int[][] projection, int x, int y,

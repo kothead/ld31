@@ -26,7 +26,7 @@ public class GameOverScreen extends BaseScreen {
     public GameOverScreen(LD31 game, boolean success) {
         super(game);
         Skin skin = SkinCache.getDefaultSkin();
-        String text = success ? "Well, look at you, Smarty Pants!" : "You are dead";
+        String text = success ? "Well, look at you,\n Smarty Pants!" : "You are dead";
         message = new Label(text, skin, "title");
         btnAgain = new TextButton("Again?", skin, "default");
         btnMenu = new TextButton("Menu", skin, "default");

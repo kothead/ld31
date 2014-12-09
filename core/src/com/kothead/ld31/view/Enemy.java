@@ -23,8 +23,8 @@ public class Enemy extends Walker {
     private static final float START_SPEED = 25f;
     private static final float SPEED_FACTOR = 2.5f;
     private static final int START_LIFE = 50;
-    private static final int LIFE_PER_LEVEL = 50;
-    private static final float EXP_PER_LIFE = 1f;
+    public static final int LIFE_PER_LEVEL = 50;
+    public static final float EXP_PER_LIFE = 1f;
     private static final float EXP_FLOATING = 0.1f;
     private static final int MIN_DISTANCE_TO_PLAYER = 2;
 

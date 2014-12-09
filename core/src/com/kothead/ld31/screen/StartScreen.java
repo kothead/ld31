@@ -25,7 +25,7 @@ public class StartScreen extends BaseScreen {
     public StartScreen(LD31 game) {
         super(game);
         Skin skin = SkinCache.getDefaultSkin();
-        title = new Label("PaPaPaPath!!!", skin, "title");
+        title = new Label("Runaway", skin, "title");
         btnStart = new TextButton("Start", skin, "default");
         btnExit = new TextButton("Exit", skin, "default");
         textField = new TextField(Long.toString(GameScreen.seed), skin, "default");

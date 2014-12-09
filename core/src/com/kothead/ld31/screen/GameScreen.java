@@ -29,8 +29,8 @@ import java.util.Random;
 public class GameScreen extends BaseScreen {
 
     private static final String TEXTURE_FLOOR = "floor";
+    private static final int DAMAGE_TO_DESTROY_WALL = 110;
     private static final int MAX_ENEMIES = 20;
-    private static final int DAMAGE_TO_DESTROY_WALL = 150;
 
     private static final String UI_HIT = "hit : %d";
     private static final String UI_LVL = "lvl : %d";
@@ -139,6 +139,7 @@ public class GameScreen extends BaseScreen {
             if (enemy.grab()) {
                 enemyIter.remove();
                 player.decLife();
+                labelHit.setText(String.format(UI_HIT, player.getLifes()));
                 SoundCache.play(SoundCache.SOUND_MINUS);
             }
         }
