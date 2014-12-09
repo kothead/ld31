@@ -1,6 +1,6 @@
 
 pack.png
-size: 256,64
+size: 512,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -11,37 +11,44 @@ floor
   orig: 36, 36
   offset: 0, 0
   index: -1
-message
+heart
   rotate: false
   xy: 42, 2
   size: 36, 36
   orig: 36, 36
   offset: 0, 0
   index: -1
-portal
+message
   rotate: false
   xy: 82, 2
   size: 36, 36
   orig: 36, 36
   offset: 0, 0
-  index: 1
+  index: -1
 portal
   rotate: false
   xy: 122, 2
   size: 36, 36
   orig: 36, 36
   offset: 0, 0
-  index: 2
+  index: 1
 portal
   rotate: false
   xy: 162, 2
   size: 36, 36
   orig: 36, 36
   offset: 0, 0
-  index: 3
+  index: 2
 portal
   rotate: false
   xy: 202, 2
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: 3
+portal
+  rotate: false
+  xy: 242, 2
   size: 36, 36
   orig: 36, 36
   offset: 0, 0

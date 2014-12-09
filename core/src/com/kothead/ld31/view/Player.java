@@ -1,5 +1,9 @@
 package com.kothead.ld31.view;
 
+import static com.kothead.ld31.data.Configuration.LABYRINTH_CELL_SIZE;
+import static com.kothead.ld31.data.Configuration.LABYRINTH_HEIGHT;
+import static com.kothead.ld31.data.Configuration.LABYRINTH_WIDTH;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -84,6 +88,39 @@ public class Player extends Walker {
 
     public void incLife() {
         life++;
+    }
+
+    public boolean checkLife(Life life) {
+        if (life == null) return false;
+        if (life.getGridX() != getGridX()
+                || life.getGridY() != getGridY()) return false;
+        int offsetX = (int) getX() % LABYRINTH_CELL_SIZE + (int) getWidth() / 2;
+        int offsetY = (int) getY() % LABYRINTH_CELL_SIZE + (int) getHeight() / 2;
+
+        // TODO: heart size 20x20
+        if (Math.abs(offsetX - LABYRINTH_CELL_SIZE / 2) < 10
+                && Math.abs(offsetY - LABYRINTH_CELL_SIZE / 2) < 10) {
+            incLife();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isOutThere() {
+        return getGridX() < 0 || getGridX() >= LABYRINTH_WIDTH
+                || getGridY() < 0 || getGridY() >= LABYRINTH_HEIGHT;
+    }
+
+    public int getLifes() {
+        return life;
+    }
+
+    public int getExp() {
+        return exp;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     @Override

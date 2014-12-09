@@ -12,13 +12,13 @@ import static com.kothead.ld31.data.Configuration.*;
 /**
  * Created by st on 12/8/14.
  */
-public class Board extends Sprite {
+public class Life extends Sprite {
 
-    private static final String TEXTURE_NAME = "message";
+    private static final String TEXTURE_NAME = "heart";
 ;
     private int gridX, gridY;
 
-    public Board(long seed) {
+    public Life(long seed) {
         super(ImageCache.getTexture(TEXTURE_NAME));
         setSize(LABYRINTH_CELL_SIZE, LABYRINTH_CELL_SIZE);
 

@@ -1,16 +1,17 @@
 package com.kothead.ld31.screen;
 
-import static com.kothead.ld31.data.Configuration.*;
+import static com.kothead.ld31.data.Configuration.LABYRINTH_CELL_SIZE;
+import static com.kothead.ld31.data.Configuration.LABYRINTH_WIDTH;
+import static com.kothead.ld31.data.Configuration.LABYRINTH_HEIGHT;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.kothead.ld31.LD31;
 import com.kothead.ld31.data.Configuration;
@@ -32,7 +33,13 @@ public class GameScreen extends BaseScreen {
 
     private static final String TEXTURE_FLOOR = "floor";
     private static final int MAX_ENEMIES = 20;
-    private static final int DAMAGE_TO_DESTROY_WALL = 1;
+    private static final int DAMAGE_TO_DESTROY_WALL = 150;
+
+    private static final String UI_HIT = "hit : %d";
+    private static final String UI_LVL = "lvl : %d";
+    private static final String UI_EXP = "exp : %d";
+    private static final int UI_HEIGHT = 15;
+    private static final int UI_WIDTH = 50;
 
     public static long seed = 100;
 
@@ -43,8 +50,10 @@ public class GameScreen extends BaseScreen {
     private Lightmap lightmap;
     private Array<Bullet> bullets;
     private Array<Enemy> enemies;
-    private Board board;
+    private Life life;
     private Portal portal;
+
+    private Label labelHit, labelLvl, labelExp;
 
     private Messages messages;
 
@@ -57,7 +66,7 @@ public class GameScreen extends BaseScreen {
         GameScreen.seed = seed;
 
         background = new TiledSprite(ImageCache.getTexture(TEXTURE_FLOOR),
-                getWorldWidth(), getWorldHeight());
+                LABYRINTH_WIDTH * LABYRINTH_CELL_SIZE, LABYRINTH_HEIGHT * LABYRINTH_CELL_SIZE);
 
         player = new Player();
         float position = (Configuration.LABYRINTH_CELL_SIZE - Player.SIZE) / 2f;
@@ -76,6 +85,7 @@ public class GameScreen extends BaseScreen {
         messages.setMessage(Messages.START_TUTORIAL);
 
         recreateThingsOnMap();
+        createUi();
 
         Gdx.input.setInputProcessor(new Processor());
     }
@@ -84,12 +94,12 @@ public class GameScreen extends BaseScreen {
     public void render(float delta) {
         super.render(delta);
 
-        Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch().begin();
         background.draw(batch(), 0, 0);
-        board.draw(batch());
+        if (life != null) life.draw(batch());
         for (int i = 0; i < controller.getHeight(); i++) {
             for (int j = 0; j < controller.getWidth(); j++) {
                 if (controller.isPortal(j, i)) {
@@ -155,11 +165,20 @@ public class GameScreen extends BaseScreen {
         stage().draw();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
+        if (player.checkLife(life)) {
+            life = null;
+            labelHit.setText(String.format(UI_HIT, player.getLifes()));
+        }
+
         if (player.levelUp()) {
             messages.setMessage(Messages.MESSAGE_NEW_LEVEL);
+            labelLvl.setText(String.format(UI_LVL, player.getLevel()));
         }
         if (player.isDead()) {
             getGame().setGameOverScreen(false);
+        }
+        if (player.isOutThere()) {
+            getGame().setGameOverScreen(true);
         }
     }
 
@@ -201,6 +220,7 @@ public class GameScreen extends BaseScreen {
                 int exp = enemy.getExp();
                 player.addExp(exp);
                 messages.setMessage(Messages.MESSAGE_GAIN_EXP, exp);
+                labelExp.setText(String.format(UI_EXP, player.getExp()));
             }
         }
     }
@@ -217,7 +237,20 @@ public class GameScreen extends BaseScreen {
             enemies.add(enemy);
         }
 
-        board = new Board(seed);
+        life = new Life(seed);
+    }
+
+    private void createUi() {
+        Skin skin = SkinCache.getDefaultSkin();
+        labelExp = new Label(String.format(UI_EXP, player.getExp()), skin, "message");
+        labelHit = new Label(String.format(UI_HIT, player.getLifes()), skin, "message");
+        labelLvl = new Label(String.format(UI_LVL, player.getLevel()), skin, "message");
+        Table table = new Table();
+        table.setFillParent(true);
+        table.add(labelExp).expandX().width(UI_WIDTH).height(UI_HEIGHT).right().row();
+        table.add(labelHit).expandX().width(UI_WIDTH).height(UI_HEIGHT).right().row();
+        table.add(labelLvl).expand().width(UI_WIDTH).height(UI_HEIGHT).right().top();
+        stage().addActor(table);
     }
 
     private class Processor extends InputAdapter {
