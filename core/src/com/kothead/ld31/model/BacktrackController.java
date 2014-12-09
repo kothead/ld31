@@ -1,7 +1,9 @@
 package com.kothead.ld31.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.kothead.ld31.data.Direction;
+import com.kothead.ld31.data.SoundCache;
 import com.kothead.ld31.util.Util;
 
 import java.util.Arrays;
@@ -148,6 +150,7 @@ public class BacktrackController implements LabyrinthController {
         current = next;
         deepness++;
         generateNext();
+        SoundCache.play(SoundCache.SOUND_GLITCH);
     }
 
     private void moveIntoPrev() {

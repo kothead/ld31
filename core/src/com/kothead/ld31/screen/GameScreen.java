@@ -14,10 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.kothead.ld31.LD31;
-import com.kothead.ld31.data.Configuration;
-import com.kothead.ld31.data.Direction;
-import com.kothead.ld31.data.ImageCache;
-import com.kothead.ld31.data.SkinCache;
+import com.kothead.ld31.data.*;
 import com.kothead.ld31.model.BacktrackController;
 import com.kothead.ld31.util.Messages;
 import com.kothead.ld31.util.Util;
@@ -142,6 +139,7 @@ public class GameScreen extends BaseScreen {
             if (enemy.grab()) {
                 enemyIter.remove();
                 player.decLife();
+                SoundCache.play(SoundCache.SOUND_MINUS);
             }
         }
 
@@ -168,31 +166,41 @@ public class GameScreen extends BaseScreen {
         if (player.checkLife(life)) {
             life = null;
             labelHit.setText(String.format(UI_HIT, player.getLifes()));
+            SoundCache.play(SoundCache.SOUND_BONUS);
         }
 
         if (player.levelUp()) {
             messages.setMessage(Messages.MESSAGE_NEW_LEVEL);
             labelLvl.setText(String.format(UI_LVL, player.getLevel()));
+            SoundCache.play(SoundCache.SOUND_BONUS);
         }
         if (player.isDead()) {
             getGame().setGameOverScreen(false);
+            SoundCache.play(SoundCache.SOUND_DEATH);
         }
         if (player.isOutThere()) {
             getGame().setGameOverScreen(true);
+            SoundCache.play(SoundCache.SOUND_DEATH);
         }
     }
 
     private void processBullets(Wall wall, float delta) {
+        boolean removing = false;
+        boolean destroying = false;
+
         Iterator<Bullet> iterBullet = bullets.iterator();
         while (iterBullet.hasNext()) {
             Bullet bullet = iterBullet.next();
             if (bullet.collided(wall, delta)) {
                 iterBullet.remove();
+                removing = true;
                 if (bullet.getDamage() >= DAMAGE_TO_DESTROY_WALL) {
                     if (wall.isRight()) {
                         controller.destroyWallRight(wall.getGridX(), wall.getGridY());
+                        destroying = true;
                     } else {
                         controller.destroyWallBottom(wall.getGridX(), wall.getGridY());
+                        destroying = true;
                     }
                 }
                 continue;
@@ -207,15 +215,18 @@ public class GameScreen extends BaseScreen {
                 Enemy enemy = enemies.get(i);
                 if (enemy.hit(bullet)) {
                     iterBullet.remove();
+                    removing = true;
                     break;
                 }
             }
+
         }
 
         Iterator<Enemy> iterEnemy = enemies.iterator();
         while (iterEnemy.hasNext()) {
             Enemy enemy = iterEnemy.next();
             if (enemy.isDead()) {
+                destroying = true;
                 iterEnemy.remove();
                 int exp = enemy.getExp();
                 player.addExp(exp);
@@ -223,6 +234,9 @@ public class GameScreen extends BaseScreen {
                 labelExp.setText(String.format(UI_EXP, player.getExp()));
             }
         }
+
+        if (removing) SoundCache.play(SoundCache.SOUND_HIT);
+        if (destroying) SoundCache.play(SoundCache.SOUND_EXPLOSION);
     }
 
     private void recreateThingsOnMap() {

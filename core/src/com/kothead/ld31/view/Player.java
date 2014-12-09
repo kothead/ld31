@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.kothead.ld31.data.Configuration;
 import com.kothead.ld31.data.Direction;
+import com.kothead.ld31.data.SoundCache;
 import com.kothead.ld31.model.LabyrinthBacktrack;
 import com.kothead.ld31.model.LabyrinthController;
 import com.kothead.ld31.screen.GameScreen;
@@ -51,6 +52,7 @@ public class Player extends Walker {
     }
 
     public Bullet shoot(Direction direction) {
+        SoundCache.play(SoundCache.SOUND_LASER);
         Bullet bullet = new Bullet(level, direction);
         bullet.setX(getX() + getWidth() / 2 - bullet.getWidth() / 2);
         bullet.setY(getY() + getHeight() / 2 - bullet.getHeight() / 2);
